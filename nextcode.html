@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next Code — Aprende programación con IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Manrope:wght@500;800&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ─────────────────────────────────────────────────── */
+:root{
+  --cream:#f0eedf;--cream-d:#e4e2d2;--light:#faf9f5;
+  --dark:#181611;--copper:#b4532e;--copper-h:#9d4526;--muted:#6b6454;
+  --ab:#0d1117;--as:#161b22;--as2:#21262d;--abr:#30363d;
+  --at:#e6edf3;--am:#8b949e;--ag:#3fb950;--ar:#f85149;--abl:#58a6ff;
+  --ao:#d29922;--ac:#c46f42;
+  --r:10px;--rl:18px;
+  --ease:.18s cubic-bezier(.22,.8,.2,1);
+  --sh:0 4px 20px rgba(0,0,0,.08);--shl:0 8px 40px rgba(0,0,0,.14);
+}
+/* ── Reset ─────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--cream);overflow-x:hidden}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit;text-decoration:none}
+p,h1,h2,h3,h4{margin:0}
+ul{list-style:none;margin:0;padding:0}
+:focus-visible{outline:3px solid var(--copper);outline-offset:3px;border-radius:4px}
+.adm :focus-visible{outline-color:var(--abl)}
+
+/* ── Page system ───────────────────────────────────────────────── */
+.page{display:none}
+.page.active{display:block}
+#pg-student.active{display:flex;flex-direction:column;min-height:100svh}
+#pg-asetup.active,#pg-alogin.active{display:flex;align-items:center;justify-content:center;min-height:100svh;padding:20px}
+#pg-adash.active{display:flex;min-height:100svh}
+
+/* ── Landing ───────────────────────────────────────────────────── */
+.site-header{position:absolute;top:0;left:0;right:0;z-index:10;padding:28px 48px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{font-family:'Manrope',sans-serif;font-weight:500;font-size:26px;letter-spacing:-.06em;color:var(--dark)}
+.brand em{font-style:normal;color:var(--copper)}
+.site-nav{display:flex;align-items:center;gap:4px}
+.site-nav button,.site-nav a{display:block;padding:9px 16px;font-size:13px;font-weight:500;border-radius:100px;color:var(--muted);transition:background var(--ease),color var(--ease)}
+.site-nav button:hover,.site-nav a:hover{background:rgba(0,0,0,.06);color:var(--dark)}
+.nav-cta{background:var(--dark)!important;color:var(--cream)!important;padding:9px 22px!important}
+.nav-cta:hover{background:var(--copper)!important;color:#fff!important}
+
+.hero{position:relative;min-height:700px;height:100svh;max-height:1100px;background:var(--cream);overflow:hidden;display:flex;align-items:stretch}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 75% at 75% 48%,#e2dfc6,transparent 62%);pointer-events:none;z-index:0}
+.hero-content{position:relative;z-index:3;display:flex;flex-direction:column;justify-content:center;padding:120px 0 60px 7%;max-width:560px;pointer-events:none}
+.hero-content>*{pointer-events:auto}
+.hero-h1{font-family:'Manrope',sans-serif;font-weight:500;font-size:clamp(76px,8.2vw,140px);line-height:.90;letter-spacing:-.075em;color:var(--dark);margin-bottom:28px}
+.hero-h1 em{font-style:normal;color:var(--copper)}
+.hero-sub{font-size:clamp(18px,1.5vw,22px);line-height:1.5;color:var(--muted);margin-bottom:36px;max-width:400px}
+.hero-acts{display:flex;gap:12px;flex-wrap:wrap}
+#hero-response{font-size:13px;color:var(--copper);min-height:18px;margin-top:16px}
+
+/* ── Buttons ───────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:100px;font-size:14px;font-weight:500;height:52px;padding:0 28px;white-space:nowrap;transition:background var(--ease),transform var(--ease),box-shadow var(--ease),color var(--ease)}
+.btn-lg{height:62px;padding:0 36px;font-size:15px}
+.btn-sm{height:36px;padding:0 16px;font-size:12px;font-weight:500}
+.btn-full{width:100%}
+.btn-p{background:var(--dark);color:var(--cream);box-shadow:0 2px 18px rgba(24,22,17,.18)}
+.btn-p:hover{background:var(--copper);transform:translateY(-1px);box-shadow:0 6px 24px rgba(180,83,46,.28)}
+.btn-p:active{transform:none}
+.btn-s{background:transparent;color:var(--dark);border:1.5px solid rgba(24,22,17,.2)}
+.btn-s:hover{background:rgba(24,22,17,.05);border-color:rgba(24,22,17,.35)}
+
+/* ── Three.js canvas area ──────────────────────────────────────── */
+.visual{position:absolute;inset:80px 0 50px 44%;z-index:2;touch-action:pan-y}
+.canvas-mount,.canvas-mount canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
+.canvas-mount canvas{filter:saturate(1.28) contrast(1.045)}
+.fallback-art{position:absolute;inset:0;display:grid;place-content:center;font-size:120px;opacity:.12;pointer-events:none;user-select:none}
+.webgl-ready .fallback-art{display:none}
+#metrics{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+
+/* ── Forms (light theme) ───────────────────────────────────────── */
+.f-group{margin-bottom:15px}
+.f-label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.02em}
+.f-input{width:100%;height:48px;padding:0 16px;background:var(--cream-d);border:1.5px solid transparent;border-radius:10px;font-size:14px;color:var(--dark);outline:none;transition:border-color var(--ease),background var(--ease)}
+.f-input:focus{border-color:var(--copper);background:#fff}
+.f-hint{font-size:11px;color:var(--muted);margin-top:3px}
+.f-sw{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}
+.f-sw button{color:var(--copper);font-weight:500}
+.f-sw button:hover{text-decoration:underline}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none}
+.alert.show{display:block}
+.alert-err{background:#fef0ef;color:#c02020;border:1px solid #f5c0be}
+.alert-ok{background:#f0faf3;color:#1a7340;border:1px solid #b8e8ca}
+
+/* ── Modal ─────────────────────────────────────────────────────── */
+.modal-bg{position:fixed;inset:0;z-index:100;background:rgba(15,12,8,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
+.modal-bg[hidden]{display:none}
+.modal-box{background:var(--light);border-radius:20px;padding:38px 34px;width:100%;max-width:440px;box-shadow:var(--shl);position:relative;animation:popIn .28s cubic-bezier(.22,.8,.2,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.96) translateY(12px)}to{opacity:1;transform:none}}
+.modal-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.06);color:var(--muted);font-size:18px;display:grid;place-items:center;transition:background var(--ease)}
+.modal-x:hover{background:rgba(0,0,0,.12)}
+.modal-title{font-family:'Manrope',sans-serif;font-weight:500;font-size:22px;letter-spacing:-.04em;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
+
+/* ── Student dashboard ─────────────────────────────────────────── */
+.dash-hdr{position:sticky;top:0;z-index:20;height:62px;padding:0 28px;display:flex;align-items:center;gap:16px;background:rgba(240,238,223,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.07)}
+.dash-brand{font-family:'Manrope',sans-serif;font-weight:500;font-size:19px;letter-spacing:-.04em;margin-right:auto}
+.dash-brand em{font-style:normal;color:var(--copper)}
+.dash-user-txt{font-size:13px;color:var(--muted);white-space:nowrap}
+.dash-user-txt strong{color:var(--dark)}
+.dash-layout{display:flex;flex:1;overflow:hidden}
+.dash-sidebar{width:210px;min-width:210px;padding:16px 10px;border-right:1px solid rgba(0,0,0,.07);overflow-y:auto}
+.dash-nav-lbl{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);opacity:.6;padding:12px 14px 7px}
+.dash-nav-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;width:100%;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);text-align:left;margin-bottom:2px;transition:background var(--ease),color var(--ease)}
+.dash-nav-btn:hover{background:rgba(0,0,0,.05);color:var(--dark)}
+.dash-nav-btn.on{background:rgba(180,83,46,.1);color:var(--copper)}
+.dash-main{flex:1;padding:26px 28px;overflow-y:auto}
+.dsec{display:none}
+.dsec.on{display:block}
+.dsec-h{font-family:'Manrope',sans-serif;font-weight:500;font-size:25px;letter-spacing:-.04em;margin-bottom:5px}
+.dsec-p{font-size:14px;color:var(--muted);margin-bottom:22px}
+.c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:13px}
+.c-card{background:var(--light);border-radius:12px;padding:19px;border:1.5px solid rgba(0,0,0,.06);cursor:pointer;transition:transform var(--ease),box-shadow var(--ease),border-color var(--ease)}
+.c-card:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:rgba(180,83,46,.2)}
+.c-card:focus-visible{outline:3px solid var(--copper)}
+.c-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500;background:rgba(180,83,46,.1);color:var(--copper);margin-bottom:9px}
+.c-card h3{font-size:15px;font-weight:500;margin-bottom:4px;letter-spacing:-.02em}
+.c-card p{font-size:13px;color:var(--muted);line-height:1.5}
+.c-viewer{background:var(--light);border-radius:12px;padding:22px;border:1.5px solid rgba(0,0,0,.06)}
+.c-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);padding:6px 12px;border-radius:8px;margin-bottom:18px;transition:background var(--ease),color var(--ease)}
+.c-back:hover{background:rgba(0,0,0,.06);color:var(--dark)}
+.c-viewer h2{font-size:21px;font-weight:500;letter-spacing:-.03em;margin:10px 0 5px}
+.c-viewer .cdesc{font-size:14px;color:var(--muted);margin-bottom:18px}
+.vid-wrap{width:100%;aspect-ratio:16/9;border-radius:8px;overflow:hidden;margin-top:14px}
+.vid-wrap iframe{width:100%;height:100%;border:0}
+.txt-body{font-size:15px;line-height:1.8;white-space:pre-wrap;margin-top:14px}
+.ext-lnk{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;background:var(--cream-d);border-radius:8px;font-size:14px;font-weight:500;margin-top:14px;transition:background var(--ease)}
+.ext-lnk:hover{background:var(--cream)}
+.empty-st{text-align:center;padding:52px 20px;color:var(--muted)}
+.empty-st .ico{font-size:42px;margin-bottom:13px}
+.empty-st h3{font-size:16px;font-weight:500;color:var(--dark);margin-bottom:5px}
+.empty-st p{font-size:13px}
+.mini-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px;margin-bottom:24px}
+.mini-stat{background:var(--light);border:1.5px solid rgba(0,0,0,.06);border-radius:10px;padding:16px}
+.mini-stat .sl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.mini-stat .sv{font-family:'Manrope',sans-serif;font-size:28px;font-weight:500;margin-top:3px}
+.profile-card{background:var(--light);border-radius:12px;padding:22px;max-width:440px;border:1.5px solid rgba(0,0,0,.06)}
+.p-avatar{width:58px;height:58px;border-radius:50%;background:var(--copper);display:grid;place-items:center;font-size:21px;color:#fff;font-family:'Manrope',sans-serif;font-weight:500;margin-bottom:13px}
+.p-name{font-size:18px;font-weight:500;letter-spacing:-.03em}
+.p-uname{font-size:13px;color:var(--muted);margin:2px 0 16px}
+.p-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--cream-d);font-size:13px}
+.p-row:last-child{border:0}
+.p-row span:first-child{color:var(--muted)}
+
+/* ── Admin theme ───────────────────────────────────────────────── */
+.adm{background:var(--ab);color:var(--at)}
+.adm-box{width:100%;max-width:380px;background:var(--as);border:1px solid var(--abr);border-radius:12px;padding:34px}
+.adm-box-ico{text-align:center;font-size:30px;margin-bottom:10px}
+.adm-box h2{text-align:center;font-family:'Manrope',sans-serif;font-weight:500;font-size:19px;letter-spacing:-.04em;color:var(--at);margin-bottom:3px}
+.adm-box .sub{text-align:center;font-size:12px;color:var(--am);margin-bottom:22px}
+.adm-hint{font-size:11px;color:var(--am);text-align:center;margin-top:12px}
+.a-group{margin-bottom:13px}
+.a-lbl{display:block;font-size:11px;font-weight:500;color:var(--am);margin-bottom:4px;letter-spacing:.04em;text-transform:uppercase}
+.a-inp{width:100%;height:42px;padding:0 13px;background:var(--ab);border:1px solid var(--abr);border-radius:8px;font-size:13px;color:var(--at);outline:none;transition:border-color var(--ease)}
+.a-inp:focus{border-color:var(--abl)}
+.a-ta{width:100%;padding:9px 13px;background:var(--ab);border:1px solid var(--abr);border-radius:8px;font-size:13px;color:var(--at);min-height:78px;resize:vertical;outline:none;transition:border-color var(--ease)}
+.a-ta:focus{border-color:var(--abl)}
+.a-sel{width:100%;height:42px;padding:0 13px;background:var(--ab);border:1px solid var(--abr);border-radius:8px;font-size:13px;color:var(--at);outline:none;cursor:pointer;transition:border-color var(--ease)}
+.a-sel:focus{border-color:var(--abl)}
+.a-alert{padding:9px 13px;border-radius:7px;font-size:12px;margin-bottom:11px;display:none}
+.a-alert.show{display:block}
+.a-alert-err{background:rgba(248,81,73,.12);color:var(--ar);border:1px solid rgba(248,81,73,.25)}
+.a-attempts{font-size:11px;color:var(--ar);text-align:center;margin-top:7px;min-height:14px}
+.btn-ap{width:100%;height:42px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:500;margin-top:5px;transition:background var(--ease),opacity var(--ease)}
+.btn-ap:hover{background:#b45c32}
+.btn-ap:disabled{opacity:.5;cursor:not-allowed}
+.btn-aa{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 18px;background:var(--ac);color:#fff;border-radius:8px;font-size:13px;font-weight:500;transition:background var(--ease)}
+.btn-aa:hover{background:#b45c32}
+.btn-asm{height:28px;padding:0 12px;border-radius:6px;font-size:11px;font-weight:500;transition:background var(--ease),color var(--ease)}
+.b-g{background:rgba(63,185,80,.14);color:var(--ag)}
+.b-g:hover{background:rgba(63,185,80,.24)}
+.b-r{background:rgba(248,81,73,.11);color:var(--ar)}
+.b-r:hover{background:rgba(248,81,73,.21)}
+.b-b{background:rgba(88,166,255,.11);color:var(--abl)}
+.b-b:hover{background:rgba(88,166,255,.21)}
+.b-gh{background:rgba(255,255,255,.05);color:var(--am)}
+.b-gh:hover{background:rgba(248,81,73,.14);color:var(--ar)}
+.btn-ico{width:29px;height:29px;border-radius:6px;display:grid;place-items:center;font-size:13px;background:rgba(255,255,255,.05);color:var(--am);transition:background var(--ease),color var(--ease)}
+.btn-ico:hover{background:rgba(255,255,255,.11);color:var(--at)}
+.btn-ico.d:hover{background:rgba(248,81,73,.14);color:var(--ar)}
+.btn-ico.g:hover{background:rgba(63,185,80,.11);color:var(--ag)}
+/* Admin sidebar */
+.adm-side{width:210px;min-width:210px;background:var(--as);border-right:1px solid var(--abr);display:flex;flex-direction:column;overflow-y:auto}
+.adm-brand-box{padding:19px;border-bottom:1px solid var(--abr)}
+.adm-brand-box .nm{font-family:'Manrope',sans-serif;font-weight:500;font-size:15px;letter-spacing:-.04em;color:var(--at)}
+.adm-brand-box .rl{font-size:10px;color:var(--ac);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.adm-nav{display:flex;align-items:center;gap:9px;padding:10px 19px;font-size:13px;color:var(--am);width:100%;text-align:left;transition:background var(--ease),color var(--ease)}
+.adm-nav:hover{background:rgba(255,255,255,.03);color:var(--at)}
+.adm-nav.on{background:rgba(196,111,66,.11);color:var(--ac)}
+.adm-nav-ico{font-size:14px;width:17px;text-align:center}
+.adm-nav-bdg{margin-left:auto;background:var(--ac);color:#fff;border-radius:100px;font-size:10px;padding:1px 6px;font-weight:600}
+.adm-foot{margin-top:auto;padding:15px 19px;border-top:1px solid var(--abr)}
+.adm-foot button{font-size:12px;color:var(--am);display:flex;align-items:center;gap:7px;transition:color var(--ease)}
+.adm-foot button:hover{color:var(--at)}
+/* Admin main */
+.adm-main{flex:1;padding:26px 28px;overflow-y:auto;background:var(--ab)}
+.asec{display:none}
+.asec.on{display:block}
+.adm-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:14px;flex-wrap:wrap}
+.adm-hdr h2{font-family:'Manrope',sans-serif;font-weight:500;font-size:19px;letter-spacing:-.04em;color:var(--at)}
+.adm-hdr p{font-size:13px;color:var(--am);margin-top:4px}
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:11px;margin-bottom:22px}
+.adm-stat{background:var(--as);border:1px solid var(--abr);border-radius:8px;padding:15px 17px}
+.adm-stat .sl{font-size:11px;color:var(--am);text-transform:uppercase;letter-spacing:.06em}
+.adm-stat .sv{font-family:'Manrope',sans-serif;font-size:27px;font-weight:500;color:var(--at);margin-top:3px}
+/* Admin table */
+.adm-tbl-wrap{background:var(--as);border:1px solid var(--abr);border-radius:10px;overflow:hidden}
+.adm-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.adm-tbl th{text-align:left;padding:10px 13px;font-size:11px;font-weight:500;color:var(--am);text-transform:uppercase;letter-spacing:.06em;background:var(--as2);border-bottom:1px solid var(--abr)}
+.adm-tbl td{padding:11px 13px;border-bottom:1px solid var(--abr);color:var(--at);vertical-align:middle}
+.adm-tbl tr:last-child td{border:0}
+.adm-tbl tr:hover td{background:rgba(255,255,255,.015)}
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:500}
+.b-ok{background:rgba(63,185,80,.14);color:var(--ag)}
+.b-off{background:rgba(248,81,73,.14);color:var(--ar)}
+.b-or{background:rgba(210,153,34,.14);color:var(--ao)}
+/* Content cards (admin) */
+.adm-c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px;margin-top:18px}
+.adm-c-card{background:var(--as);border:1px solid var(--abr);border-radius:10px;padding:17px;transition:border-color var(--ease)}
+.adm-c-card.on-card{border-color:rgba(63,185,80,.3)}
+.adm-c-card h4{font-size:14px;font-weight:500;color:var(--at);margin:8px 0 5px}
+.adm-c-card p{font-size:12px;color:var(--am);margin-bottom:13px;line-height:1.5}
+.adm-c-acts{display:flex;gap:6px;flex-wrap:wrap}
+/* Toggle */
+.tgl-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--abr)}
+.tgl-row:last-of-type{border:0}
+.tgl-lbl{font-size:13px;color:var(--at)}
+.tgl-desc{font-size:11px;color:var(--am);margin-top:2px}
+.tgl{position:relative;width:40px;height:23px}
+.tgl input{opacity:0;width:0;height:0}
+.tgl-sl{position:absolute;inset:0;background:var(--abr);border-radius:100px;cursor:pointer;transition:background .2s}
+.tgl-sl::before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.tgl input:checked+.tgl-sl{background:var(--ag)}
+.tgl input:checked+.tgl-sl::before{transform:translateX(17px)}
+/* Admin modal */
+.adm-modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px}
+.adm-modal-bg[hidden]{display:none}
+.adm-modal-box{background:var(--as);border:1px solid var(--abr);border-radius:12px;padding:26px;width:100%;max-width:500px;animation:popIn .25s cubic-bezier(.22,.8,.2,1);max-height:90vh;overflow-y:auto}
+.adm-modal-title{font-family:'Manrope',sans-serif;font-size:17px;font-weight:500;letter-spacing:-.04em;color:var(--at);margin-bottom:18px}
+/* Settings card */
+.adm-scard{background:var(--as);border:1px solid var(--abr);border-radius:10px;padding:22px;margin-bottom:18px}
+.adm-scard-title{font-size:13px;font-weight:500;color:var(--at);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--abr)}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .site-header{padding:22px 24px}
+  .hero{height:auto;min-height:100svh;max-height:none;flex-direction:column}
+  .hero-content{padding:130px 7% 32px;max-width:100%}
+  .hero-h1{font-size:clamp(60px,13vw,90px)}
+  .hero-sub{font-size:18px;max-width:100%}
+  .visual{position:relative;inset:auto;width:100%;height:62vw;min-height:270px;max-height:430px}
+  .dash-sidebar{display:none}
+  .adm-side{width:180px;min-width:180px}
+}
+@media(max-width:600px){
+  .site-header .nav-cta{display:none}
+  .dash-main,.adm-main{padding:18px 14px}
+  .modal-box{padding:28px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .btn,.btn-ap,.c-card{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LANDING ══════════════════════════════════════ -->
+<div id="pg-landing" class="page active">
+<section class="hero" aria-label="Next Code — Plataforma de programación con IA">
+  <header class="site-header">
+    <a href="#" class="brand" aria-label="Next Code inicio">Next<em>Code</em></a>
+    <nav class="site-nav" aria-label="Navegación">
+      <button onclick="G.openModal('ml')">Ingresar</button>
+      <button class="nav-cta" onclick="G.openModal('mr')">Inscribirse →</button>
+    </nav>
+  </header>
+  <div class="hero-content">
+    <h1 class="hero-h1">Aprende a<br>programar<br>con <em>IA.</em></h1>
+    <p class="hero-sub">El curso de programación con inteligencia artificial que te lleva al siguiente nivel.</p>
+    <div class="hero-acts">
+      <button class="btn btn-p btn-lg" id="hero-cta" onclick="G.openModal('mr')">Comenzar ahora</button>
+      <button class="btn btn-s btn-lg" onclick="G.openModal('ml')">Ya tengo cuenta</button>
+    </div>
+    <p id="hero-response" aria-live="polite"></p>
+  </div>
+  <div id="visual" class="visual" tabindex="0" role="img" aria-label="Robot interactivo Next Code — usa las teclas de dirección para moverlo">
+    <div class="canvas-mount"></div>
+    <div class="fallback-art" aria-hidden="true">🤖</div>
+  </div>
+  <span id="metrics"></span>
+</section>
+</div>
+
+<!-- ══════════════ STUDENT DASHBOARD ═══════════════════════════ -->
+<div id="pg-student" class="page">
+  <header class="dash-hdr">
+    <div class="dash-brand">Next<em>Code</em></div>
+    <div class="dash-user-txt">Hola, <strong id="std-name">...</strong></div>
+    <button class="btn btn-s btn-sm" onclick="Auth.logoutStudent()">Salir</button>
+  </header>
+  <div class="dash-layout">
+    <aside class="dash-sidebar" aria-label="Menú estudiante">
+      <div class="dash-nav-lbl">Mi espacio</div>
+      <button class="dash-nav-btn on" data-sec="inicio" onclick="G.swStd('inicio',this)"><span aria-hidden="true">🏠</span>Inicio</button>
+      <button class="dash-nav-btn" data-sec="contenido" onclick="G.swStd('contenido',this)"><span aria-hidden="true">📚</span>Contenido</button>
+      <button class="dash-nav-btn" data-sec="perfil" onclick="G.swStd('perfil',this)"><span aria-hidden="true">👤</span>Mi perfil</button>
+    </aside>
+    <main class="dash-main">
+      <div id="ds-inicio" class="dsec on"><div id="std-home"></div></div>
+      <div id="ds-contenido" class="dsec">
+        <h2 class="dsec-h">Contenido disponible</h2>
+        <p class="dsec-p">Materiales habilitados por tu instructor.</p>
+        <div id="std-c-grid" class="c-grid"></div>
+        <div id="std-c-viewer" hidden></div>
+      </div>
+      <div id="ds-perfil" class="dsec">
+        <h2 class="dsec-h">Mi perfil</h2>
+        <p class="dsec-p">Tu cuenta en Next Code.</p>
+        <div id="std-profile"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN SETUP (first run) ══════════════════════ -->
+<div id="pg-asetup" class="page adm">
+  <div class="adm-box">
+    <div class="adm-box-ico">⚙️</div>
+    <h2>Configurar administrador</h2>
+    <p class="sub">Primera ejecución — crea las credenciales del panel admin.</p>
+    <div id="setup-alert" class="a-alert a-alert-err"></div>
+    <form id="form-setup" onsubmit="G.handleSetup(event)">
+      <div class="a-group"><label class="a-lbl" for="su-user">Usuario admin</label><input id="su-user" class="a-inp" type="text" autocomplete="username" required minlength="4" placeholder="Ej: nextcode_admin"></div>
+      <div class="a-group"><label class="a-lbl" for="su-pass">Contraseña</label><input id="su-pass" class="a-inp" type="password" autocomplete="new-password" required minlength="8" placeholder="Mín. 8 caracteres"></div>
+      <div class="a-group"><label class="a-lbl" for="su-conf">Confirmar</label><input id="su-conf" class="a-inp" type="password" autocomplete="new-password" required placeholder="Repite la contraseña"></div>
+      <button type="submit" class="btn-ap" id="su-btn">Crear credenciales</button>
+    </form>
+    <p class="adm-hint">🔒 Las contraseñas se almacenan como hash SHA-256 salteado. Nunca en texto plano.</p>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN LOGIN ═══════════════════════════════════ -->
+<div id="pg-alogin" class="page adm">
+  <div class="adm-box">
+    <div class="adm-box-ico">🔐</div>
+    <h2>Acceso restringido</h2>
+    <p class="sub">Panel de administración · Next Code</p>
+    <div id="al-alert" class="a-alert a-alert-err"></div>
+    <form id="form-alogin" onsubmit="G.handleAdminLogin(event)">
+      <div class="a-group"><label class="a-lbl" for="al-user">Usuario</label><input id="al-user" class="a-inp" type="text" autocomplete="username" required></div>
+      <div class="a-group"><label class="a-lbl" for="al-pass">Contraseña</label><input id="al-pass" class="a-inp" type="password" autocomplete="current-password" required></div>
+      <button type="submit" class="btn-ap" id="al-btn">Acceder</button>
+    </form>
+    <p class="a-attempts" id="al-attempts"></p>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN DASHBOARD ══════════════════════════════ -->
+<div id="pg-adash" class="page adm">
+  <aside class="adm-side" aria-label="Menú admin">
+    <div class="adm-brand-box"><div class="nm">Next Code</div><div class="rl">Panel Admin</div></div>
+    <button class="adm-nav on" data-sec="students" onclick="G.swAdm('students',this)"><span class="adm-nav-ico">👥</span>Estudiantes<span class="adm-nav-bdg" id="adm-std-cnt">0</span></button>
+    <button class="adm-nav" data-sec="content" onclick="G.swAdm('content',this)"><span class="adm-nav-ico">📚</span>Contenido</button>
+    <button class="adm-nav" data-sec="settings" onclick="G.swAdm('settings',this)"><span class="adm-nav-ico">⚙️</span>Ajustes</button>
+    <div class="adm-foot"><button onclick="Auth.logoutAdmin()">↩ Cerrar sesión</button></div>
+  </aside>
+  <main class="adm-main">
+    <!-- Estudiantes -->
+    <div id="as-students" class="asec on">
+      <div class="adm-hdr"><div><h2>Estudiantes</h2><p>Gestiona los inscritos en la plataforma.</p></div></div>
+      <div class="adm-stats">
+        <div class="adm-stat"><div class="sl">Total</div><div class="sv" id="adm-s-total">0</div></div>
+        <div class="adm-stat"><div class="sl">Activos</div><div class="sv" id="adm-s-active">0</div></div>
+        <div class="adm-stat"><div class="sl">Materiales</div><div class="sv" id="adm-s-cont">0</div></div>
+      </div>
+      <div class="adm-tbl-wrap">
+        <table class="adm-tbl" aria-label="Estudiantes">
+          <thead><tr><th>Estudiante</th><th>Correo</th><th>Estado</th><th>Inscrito</th><th>Acciones</th></tr></thead>
+          <tbody id="adm-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Contenido -->
+    <div id="as-content" class="asec">
+      <div class="adm-hdr">
+        <div><h2>Contenido</h2><p>Materiales visibles para los estudiantes.</p></div>
+        <button class="btn-aa" onclick="G.openCModal()">+ Agregar</button>
+      </div>
+      <div id="adm-c-grid" class="adm-c-grid"></div>
+    </div>
+    <!-- Ajustes -->
+    <div id="as-settings" class="asec">
+      <div class="adm-hdr"><div><h2>Ajustes</h2><p>Plataforma y seguridad.</p></div><button class="btn-aa" onclick="G.saveSettings()">Guardar cambios</button></div>
+      <div class="adm-scard">
+        <div class="adm-scard-title">📋 Plataforma</div>
+        <div class="a-group"><label class="a-lbl" for="s-name">Nombre</label><input id="s-name" class="a-inp" type="text"></div>
+        <div class="a-group"><label class="a-lbl" for="s-tag">Eslogan</label><input id="s-tag" class="a-inp" type="text"></div>
+        <div class="a-group"><label class="a-lbl" for="s-wel">Mensaje de bienvenida</label><textarea id="s-wel" class="a-ta" rows="3"></textarea></div>
+        <div class="tgl-row">
+          <div><div class="tgl-lbl">Permitir nuevas inscripciones</div><div class="tgl-desc">Los visitantes pueden registrarse.</div></div>
+          <label class="tgl"><input type="checkbox" id="s-reg"><span class="tgl-sl"></span></label>
+        </div>
+      </div>
+      <div class="adm-scard">
+        <div class="adm-scard-title">🔒 Cambiar contraseña de administrador</div>
+        <div class="a-group"><label class="a-lbl" for="s-cp">Contraseña actual</label><input id="s-cp" class="a-inp" type="password" autocomplete="current-password"></div>
+        <div class="a-group"><label class="a-lbl" for="s-np">Nueva contraseña</label><input id="s-np" class="a-inp" type="password" autocomplete="new-password"></div>
+        <div class="a-group"><label class="a-lbl" for="s-cnp">Confirmar nueva</label><input id="s-cnp" class="a-inp" type="password" autocomplete="new-password"></div>
+        <button class="btn-aa" style="width:auto" onclick="G.changePass()">Actualizar contraseña</button>
+      </div>
+      <div class="adm-scard" style="border-color:rgba(248,81,73,.3)">
+        <div class="adm-scard-title" style="color:var(--ar)">⚠️ Zona de peligro</div>
+        <p style="font-size:13px;color:var(--am);margin-bottom:14px">Estas acciones son irreversibles.</p>
+        <button class="btn-asm b-r" style="height:34px;padding:0 16px;font-size:12px" onclick="G.clearStudents()">Eliminar todos los estudiantes</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════ MODAL: Login estudiante ═══════════════════════ -->
+<div id="ml" class="modal-bg" hidden role="dialog" aria-modal="true" aria-label="Ingresar a Next Code">
+  <div class="modal-box">
+    <button class="modal-x" onclick="G.closeModal('ml')" aria-label="Cerrar">×</button>
+    <h2 class="modal-title">Bienvenido de vuelta</h2>
+    <p class="modal-sub">Ingresa a tu cuenta de Next Code</p>
+    <div id="ml-alert" class="alert alert-err"></div>
+    <form id="form-login" onsubmit="G.handleLogin(event)">
+      <div class="f-group"><label class="f-label" for="l-user">Usuario</label><input id="l-user" class="f-input" type="text" autocomplete="username" required placeholder="Tu nombre de usuario"></div>
+      <div class="f-group"><label class="f-label" for="l-pass">Contraseña</label><input id="l-pass" class="f-input" type="password" autocomplete="current-password" required placeholder="••••••••"></div>
+      <button type="submit" class="btn btn-p btn-full" id="l-btn" style="height:52px;border-radius:10px">Ingresar</button>
+    </form>
+    <p class="f-sw">¿No tienes cuenta? <button onclick="G.closeModal('ml');G.openModal('mr')">Inscríbete gratis</button></p>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL: Registro estudiante ═══════════════════ -->
+<div id="mr" class="modal-bg" hidden role="dialog" aria-modal="true" aria-label="Inscribirse a Next Code">
+  <div class="modal-box">
+    <button class="modal-x" onclick="G.closeModal('mr')" aria-label="Cerrar">×</button>
+    <h2 class="modal-title">Únete a Next Code</h2>
+    <p class="modal-sub">Crea tu cuenta y empieza hoy</p>
+    <div id="mr-alert" class="alert alert-err"></div>
+    <form id="form-reg" onsubmit="G.handleRegister(event)">
+      <div class="f-group"><label class="f-label" for="r-name">Nombre completo</label><input id="r-name" class="f-input" type="text" autocomplete="name" required placeholder="Tu nombre y apellido"></div>
+      <div class="f-group"><label class="f-label" for="r-email">Correo electrónico</label><input id="r-email" class="f-input" type="email" autocomplete="email" required placeholder="correo@ejemplo.com"></div>
+      <div class="f-group"><label class="f-label" for="r-user">Usuario</label><input id="r-user" class="f-input" type="text" autocomplete="username" required minlength="3" placeholder="Solo letras, números y _"><p class="f-hint">Sin espacios. Mín. 3 caracteres.</p></div>
+      <div class="f-group"><label class="f-label" for="r-pass">Contraseña</label><input id="r-pass" class="f-input" type="password" autocomplete="new-password" required minlength="6" placeholder="Mín. 6 caracteres"></div>
+      <div class="f-group"><label class="f-label" for="r-conf">Confirmar contraseña</label><input id="r-conf" class="f-input" type="password" autocomplete="new-password" required placeholder="Repite la contraseña"></div>
+      <button type="submit" class="btn btn-p btn-full" id="r-btn" style="height:52px;border-radius:10px">Crear cuenta</button>
+    </form>
+    <p class="f-sw">¿Ya tienes cuenta? <button onclick="G.closeModal('mr');G.openModal('ml')">Ingresar</button></p>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN MODAL: Contenido ═══════════════════════ -->
+<div id="adm-cm" class="adm-modal-bg" hidden>
+  <div class="adm-modal-box">
+    <h3 id="adm-cm-title" class="adm-modal-title">Agregar contenido</h3>
+    <div class="a-group"><label class="a-lbl" for="cf-title">Título *</label><input id="cf-title" class="a-inp" type="text" required placeholder="Nombre del material"></div>
+    <div class="a-group"><label class="a-lbl" for="cf-desc">Descripción</label><textarea id="cf-desc" class="a-ta" style="min-height:60px" placeholder="Descripción breve (opcional)"></textarea></div>
+    <div class="a-group"><label class="a-lbl" for="cf-type">Tipo</label>
+      <select id="cf-type" class="a-sel" onchange="G.updCPlaceholder()">
+        <option value="video">🎬 Video (YouTube u otro)</option>
+        <option value="text">📄 Texto / Lección</option>
+        <option value="link">🔗 Enlace externo</option>
+        <option value="pdf">📋 Documento / PDF</option>
+      </select>
+    </div>
+    <div class="a-group"><label class="a-lbl" for="cf-cont">Contenido / URL *</label><textarea id="cf-cont" class="a-ta" placeholder="Pega la URL o escribe el contenido"></textarea></div>
+    <div class="tgl-row" style="border:0;padding:6px 0 14px">
+      <div class="tgl-lbl">Visible para estudiantes</div>
+      <label class="tgl"><input type="checkbox" id="cf-en" checked><span class="tgl-sl"></span></label>
+    </div>
+    <div style="display:flex;gap:9px;justify-content:flex-end">
+      <button class="btn-asm b-gh" style="height:36px;padding:0 18px" onclick="G.closeCModal()">Cancelar</button>
+      <button class="btn-aa" onclick="G.saveContent()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCRIPTS ═══════════════════════════════════════ -->
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment }    from 'three/addons/environments/RoomEnvironment.js';
+
+/* ════════════════════════════════════════════════════════════════
+   STORAGE & CRYPTO UTILITIES
+════════════════════════════════════════════════════════════════ */
+const LS = key => ({
+  get: () => { try { const v=localStorage.getItem(key); return v?JSON.parse(v):null; } catch{ return null; } },
+  set: v => { try { localStorage.setItem(key, JSON.stringify(v)); } catch{} },
+  del: () => localStorage.removeItem(key),
+});
+const SS = key => ({
+  get: () => { try { const v=sessionStorage.getItem(key); return v?JSON.parse(v):null; } catch{ return null; } },
+  set: v => { try { sessionStorage.setItem(key, JSON.stringify(v)); } catch{} },
+  del: () => sessionStorage.removeItem(key),
+});
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const ts  = () => Date.now();
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+const K = {
+  students:'nc_students', content:'nc_content', settings:'nc_settings',
+  adminCreds:'nc_admin', adminSess:'nc_adm_s', studentSess:'nc_std_s', attempts:'nc_att',
+};
+
+/* ════════════════════════════════════════════════════════════════
+   AUTH
+════════════════════════════════════════════════════════════════ */
+const Auth = {
+  /* Admin */
+  isAdminSetup: () => !!LS(K.adminCreds).get(),
+
+  async setupAdmin(user, pass) {
+    const salt = crypto.randomUUID();
+    const hash = await sha256(salt + pass);
+    LS(K.adminCreds).set({ user, hash, salt });
+    return { ok: true };
+  },
+
+  async loginAdmin(user, pass) {
+    const att = LS(K.attempts).get() || {};
+    const a   = att.admin || { n:0, lock:0 };
+    if (ts() < a.lock) {
+      const m = Math.ceil((a.lock-ts())/60000);
+      return { ok:false, err:`Bloqueado. Espera ${m} min.` };
+    }
+    const creds = LS(K.adminCreds).get();
+    if (!creds) return { ok:false, err:'No configurado.' };
+    const hash  = await sha256(creds.salt + pass);
+    if (creds.user !== user || hash !== creds.hash) {
+      a.n++;
+      if (a.n >= 5) { a.lock = ts()+15*60*1000; a.n=0; }
+      att.admin = a; LS(K.attempts).set(att);
+      const rem = 5 - a.n;
+      return { ok:false, err: a.lock ? 'Bloqueado 15 min.' : `Incorrecto. ${rem} intento(s) restantes.` };
+    }
+    a.n=0; a.lock=0; att.admin=a; LS(K.attempts).set(att);
+    // sessionStorage: expires on tab close + 4h timeout
+    SS(K.adminSess).set({ tok: crypto.randomUUID(), exp: ts()+4*60*60*1000 });
+    return { ok: true };
+  },
+
+  logoutAdmin() { SS(K.adminSess).del(); Router.go('landing'); },
+
+  isAdminLoggedIn() {
+    const s = SS(K.adminSess).get();
+    return !!(s && s.exp > ts());
+  },
+
+  /* Students */
+  async register({ name, email, user, pass }) {
+    const cfg = Data.getSettings();
+    if (!cfg.allowReg) return { ok:false, err:'Las inscripciones están cerradas.' };
+    const list = Data.getStudents();
+    if (list.find(s=>s.user.toLowerCase()===user.toLowerCase()))
+      return { ok:false, err:'Ese usuario ya existe.' };
+    if (list.find(s=>s.email.toLowerCase()===email.toLowerCase()))
+      return { ok:false, err:'Ese correo ya está registrado.' };
+    if (!/^[a-zA-Z0-9_]{3,}$/.test(user))
+      return { ok:false, err:'Usuario: solo letras, números y _ (mín. 3 caracteres).' };
+    const salt = crypto.randomUUID();
+    const hash = await sha256(salt + pass);
+    const student = { id:uid(), name, email, user, salt, hash, at: new Date().toISOString(), enabled:true };
+    list.push(student);
+    LS(K.students).set(list);
+    return { ok:true, student };
+  },
+
+  async loginStudent(user, pass) {
+    const att = LS(K.attempts).get() || {};
+    const k   = 'u_'+user.toLowerCase();
+    const a   = att[k] || { n:0, lock:0 };
+    if (ts() < a.lock) {
+      const m=Math.ceil((a.lock-ts())/60000);
+      return { ok:false, err:`Bloqueado ${m} min.` };
+    }
+    const list    = Data.getStudents();
+    const student = list.find(s=>s.user.toLowerCase()===user.toLowerCase());
+    const fail = msg => {
+      a.n++;
+      if (a.n>=5){ a.lock=ts()+10*60*1000; a.n=0; }
+      att[k]=a; LS(K.attempts).set(att);
+      return { ok:false, err:msg };
+    };
+    if (!student) return fail('Usuario o contraseña incorrectos.');
+    if (!student.enabled) return { ok:false, err:'Cuenta desactivada. Contacta al administrador.' };
+    const hash = await sha256(student.salt + pass);
+    if (hash !== student.hash) {
+      const rem = 5-(a.n+1);
+      return fail(rem>0 ? `Contraseña incorrecta. ${rem} intento(s) restantes.` : 'Cuenta bloqueada 10 min.');
+    }
+    a.n=0; a.lock=0; att[k]=a; LS(K.attempts).set(att);
+    LS(K.studentSess).set({ id:student.id, tok:crypto.randomUUID(), exp:ts()+24*60*60*1000 });
+    return { ok:true, student };
+  },
+
+  logoutStudent() { LS(K.studentSess).del(); Router.go('landing'); },
+
+  isStudentLoggedIn() {
+    const s = LS(K.studentSess).get();
+    return !!(s && s.exp > ts());
+  },
+
+  getCurrentStudent() {
+    const s = LS(K.studentSess).get();
+    if (!s || s.exp<=ts()) return null;
+    return Data.getStudents().find(st=>st.id===s.id)||null;
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   DATA LAYER
+════════════════════════════════════════════════════════════════ */
+const Data = {
+  getStudents:  ()  => LS(K.students).get()||[],
+  getContent:   ()  => LS(K.content).get()||[],
+  getEnabled:   ()  => (LS(K.content).get()||[]).filter(c=>c.enabled),
+  getSettings:  ()  => ({ platformName:'Next Code', tagline:'Aprende programación con IA', allowReg:true, welcome:'¡Bienvenido! Explora el contenido habilitado.', ...(LS(K.settings).get()||{}) }),
+  updStudent(id,ch) { const l=Data.getStudents(); const i=l.findIndex(s=>s.id===id); if(i>=0){l[i]={...l[i],...ch};LS(K.students).set(l);} },
+  delStudent(id)    { LS(K.students).set(Data.getStudents().filter(s=>s.id!==id)); },
+  addContent(item)  { const l=Data.getContent(); l.push({...item,id:uid(),at:new Date().toISOString()}); LS(K.content).set(l); },
+  updContent(id,ch) { const l=Data.getContent(); const i=l.findIndex(c=>c.id===id); if(i>=0){l[i]={...l[i],...ch};LS(K.content).set(l);} },
+  delContent(id)    { LS(K.content).set(Data.getContent().filter(c=>c.id!==id)); },
+  updSettings(ch)   { LS(K.settings).set({...Data.getSettings(),...ch}); },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   ROUTER
+════════════════════════════════════════════════════════════════ */
+const Router = {
+  go(page) {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pg-'+page)?.classList.add('active');
+    if (page==='landing') threeWake(); else threePause();
+  },
+  init() {
+    const hash = location.hash.replace('#','').toLowerCase();
+    if (hash==='admin') {
+      if (Auth.isAdminLoggedIn())   { Router.go('adash'); UI.renderAdminDash(); }
+      else if (Auth.isAdminSetup()) Router.go('alogin');
+      else                          Router.go('asetup');
+    } else if (Auth.isStudentLoggedIn()) {
+      Router.go('student'); UI.renderStudentDash();
+    } else {
+      Router.go('landing');
+    }
+    window.addEventListener('hashchange', ()=>{
+      if (location.hash.replace('#','').toLowerCase()==='admin') {
+        if (Auth.isAdminLoggedIn())   { Router.go('adash'); UI.renderAdminDash(); }
+        else if (Auth.isAdminSetup()) Router.go('alogin');
+        else                          Router.go('asetup');
+      }
+    });
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   UI RENDERERS
+════════════════════════════════════════════════════════════════ */
+const UI = {
+  /* ── Student ─────────────────────────────────────────────── */
+  renderStudentDash() {
+    const std = Auth.getCurrentStudent();
+    if (!std) { Router.go('landing'); return; }
+    document.getElementById('std-name').textContent = std.name.split(' ')[0];
+    UI.renderStdHome(std);
+    UI.renderStdContent();
+    UI.renderStdProfile(std);
+  },
+
+  renderStdHome(std) {
+    const list = Data.getEnabled();
+    const cfg  = Data.getSettings();
+    document.getElementById('std-home').innerHTML = `
+      <h2 class="dsec-h">¡Hola, ${esc(std.name.split(' ')[0])}! 👋</h2>
+      <p class="dsec-p">${esc(cfg.welcome)}</p>
+      <div class="mini-stats">
+        <div class="mini-stat"><div class="sl">Materiales</div><div class="sv">${list.length}</div></div>
+        <div class="mini-stat"><div class="sl">Inscrito</div><div class="sv" style="font-size:16px;margin-top:8px">${new Date(std.at).toLocaleDateString('es',{month:'short',year:'numeric'})}</div></div>
+      </div>
+      ${list.length ? `<p style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:11px">Reciente</p><div class="c-grid">${list.slice().reverse().slice(0,3).map(c=>UI.cCardHTML(c)).join('')}</div>` : `<div class="empty-st"><div class="ico">📭</div><h3>Sin contenido aún</h3><p>Tu instructor habilitará materiales pronto.</p></div>`}`;
+    document.querySelectorAll('#std-home .c-card').forEach(el=>el.addEventListener('click',()=>G.openContent(el.dataset.id)));
+  },
+
+  renderStdContent() {
+    const list = Data.getEnabled();
+    const el   = document.getElementById('std-c-grid');
+    el.innerHTML = list.length ? list.map(c=>UI.cCardHTML(c)).join('') :
+      `<div class="empty-st" style="grid-column:1/-1"><div class="ico">📚</div><h3>Sin contenido</h3><p>Tu instructor habilitará materiales pronto.</p></div>`;
+    el.querySelectorAll('.c-card').forEach(card=>card.addEventListener('click',()=>G.openContent(card.dataset.id)));
+  },
+
+  cCardHTML(c) {
+    const ico={video:'🎬',text:'📄',link:'🔗',pdf:'📋'};
+    const lbl={video:'Video',text:'Lección',link:'Enlace',pdf:'Documento'};
+    return `<div class="c-card" data-id="${c.id}" tabindex="0" role="button" aria-label="${esc(c.title)}">
+      <div class="c-badge">${ico[c.type]||'📄'} ${lbl[c.type]||c.type}</div>
+      <h3>${esc(c.title)}</h3><p>${esc(c.description||'')}</p></div>`;
+  },
+
+  renderStdProfile(std) {
+    document.getElementById('std-profile').innerHTML = `
+      <div class="profile-card">
+        <div class="p-avatar">${std.name[0].toUpperCase()}</div>
+        <div class="p-name">${esc(std.name)}</div>
+        <div class="p-uname">@${esc(std.user)}</div>
+        <div class="p-row"><span>Correo</span><span>${esc(std.email)}</span></div>
+        <div class="p-row"><span>Inscrito</span><span>${new Date(std.at).toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'})}</span></div>
+        <div class="p-row"><span>Estado</span><span style="color:#1a7340;font-weight:500">✓ Activo</span></div>
+      </div>`;
+  },
+
+  /* ── Admin ───────────────────────────────────────────────── */
+  renderAdminDash() { UI.renderAdmStudents(); UI.renderAdmContent(); UI.renderAdmSettings(); },
+
+  renderAdmStudents() {
+    const list = Data.getStudents();
+    const cont = Data.getContent().length;
+    document.getElementById('adm-std-cnt').textContent  = list.length;
+    document.getElementById('adm-s-total').textContent  = list.length;
+    document.getElementById('adm-s-active').textContent = list.filter(s=>s.enabled).length;
+    document.getElementById('adm-s-cont').textContent   = cont;
+    document.getElementById('adm-tbody').innerHTML = list.length ? list.map(s=>`
+      <tr>
+        <td><div style="font-weight:500">${esc(s.name)}</div><div style="font-size:11px;color:var(--am)">@${esc(s.user)}</div></td>
+        <td style="color:var(--am)">${esc(s.email)}</td>
+        <td><span class="badge ${s.enabled?'b-ok':'b-off'}">${s.enabled?'● Activo':'● Inactivo'}</span></td>
+        <td style="color:var(--am)">${new Date(s.at).toLocaleDateString('es')}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn-ico ${s.enabled?'':'g'}" title="${s.enabled?'Desactivar':'Activar'}" data-id="${s.id}" data-en="${!s.enabled}" onclick="_aToggleStd(this)">${s.enabled?'🚫':'✅'}</button>
+          <button class="btn-ico d" title="Eliminar" data-id="${s.id}" data-nm="${esc(s.name)}" onclick="_aDelStd(this)">🗑</button>
+        </div></td>
+      </tr>`).join('') :
+      `<tr><td colspan="5" style="text-align:center;color:var(--am);padding:36px">Sin estudiantes registrados.</td></tr>`;
+  },
+
+  renderAdmContent() {
+    const list = Data.getContent();
+    document.getElementById('adm-s-cont').textContent = list.length;
+    document.getElementById('adm-c-grid').innerHTML = list.length ? list.map(c=>`
+      <div class="adm-c-card ${c.enabled?'on-card':''}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span class="badge ${c.enabled?'b-ok':'b-off'}">${c.enabled?'● Visible':'● Oculto'}</span>
+          <span style="font-size:10px;color:var(--am)">${c.type}</span>
+        </div>
+        <h4>${esc(c.title)}</h4>
+        <p>${esc(c.description||'—')}</p>
+        <div class="adm-c-acts">
+          <button class="btn-asm ${c.enabled?'b-r':'b-g'}" data-id="${c.id}" data-en="${!c.enabled}" onclick="_aToglCont(this)">${c.enabled?'Ocultar':'Mostrar'}</button>
+          <button class="btn-asm b-b" data-id="${c.id}" onclick="_aEditCont(this.dataset.id)">Editar</button>
+          <button class="btn-asm b-gh" data-id="${c.id}" data-t="${esc(c.title)}" onclick="_aDelCont(this)">Eliminar</button>
+        </div>
+      </div>`).join('') :
+      `<div style="grid-column:1/-1;text-align:center;padding:44px;color:var(--am)"><div style="font-size:38px;margin-bottom:11px">📭</div><p>Agrega el primer material.</p></div>`;
+  },
+
+  renderAdmSettings() {
+    const s = Data.getSettings();
+    document.getElementById('s-name').value = s.platformName;
+    document.getElementById('s-tag').value  = s.tagline;
+    document.getElementById('s-wel').value  = s.welcome;
+    document.getElementById('s-reg').checked = s.allowReg;
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   GLOBAL HANDLERS (G namespace)
+════════════════════════════════════════════════════════════════ */
+const G = {
+  openModal(id) {
+    const el = document.getElementById(id);
+    el.removeAttribute('hidden');
+    el.querySelector('input')?.focus();
+  },
+  closeModal(id) {
+    document.getElementById(id).setAttribute('hidden','');
+    const al = document.getElementById(id+'-alert') || document.getElementById(id.replace('m','m')+'-alert');
+    if (al) { al.textContent=''; al.classList.remove('show'); }
+  },
+
+  swStd(name, btn) {
+    document.querySelectorAll('.dsec').forEach(s=>s.classList.remove('on'));
+    document.querySelectorAll('.dash-nav-btn').forEach(b=>b.classList.remove('on'));
+    document.getElementById('ds-'+name)?.classList.add('on');
+    btn?.classList.add('on');
+    if (name!=='contenido') {
+      document.getElementById('std-c-grid').hidden  = false;
+      const v = document.getElementById('std-c-viewer');
+      v.hidden = true; v.innerHTML='';
+    }
+  },
+
+  swAdm(name, btn) {
+    document.querySelectorAll('.asec').forEach(s=>s.classList.remove('on'));
+    document.querySelectorAll('.adm-nav').forEach(b=>b.classList.remove('on'));
+    document.getElementById('as-'+name)?.classList.add('on');
+    btn?.classList.add('on');
+  },
+
+  openContent(id) {
+    const item = Data.getEnabled().find(c=>c.id===id);
+    if (!item) return;
+    const cbtn = document.querySelector('.dash-nav-btn[data-sec="contenido"]');
+    G.swStd('contenido', cbtn);
+    document.getElementById('std-c-grid').hidden = true;
+    const viewer = document.getElementById('std-c-viewer');
+    viewer.hidden = false;
+    let body='';
+    if (item.type==='video') {
+      const yt = item.content.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/\s]+)/);
+      body = yt ? `<div class="vid-wrap"><iframe src="https://www.youtube.com/embed/${yt[1]}" allowfullscreen></iframe></div>`
+                : `<a href="${item.content}" target="_blank" rel="noopener" class="ext-lnk">▶ Ver video</a>`;
+    } else if (item.type==='text') {
+      body = `<div class="txt-body">${esc(item.content)}</div>`;
+    } else {
+      body = `<a href="${item.content}" target="_blank" rel="noopener" class="ext-lnk">🔗 Abrir enlace</a>`;
+    }
+    const ico={video:'🎬',text:'📄',link:'🔗',pdf:'📋'};
+    const lbl={video:'Video',text:'Lección',link:'Enlace',pdf:'Documento'};
+    viewer.innerHTML=`<div class="c-viewer">
+      <button class="c-back" onclick="G.closeContent()">← Volver al contenido</button>
+      <div class="c-badge">${ico[item.type]||'📄'} ${lbl[item.type]||item.type}</div>
+      <h2>${esc(item.title)}</h2>
+      ${item.description?`<p class="cdesc">${esc(item.description)}</p>`:''}
+      ${body}</div>`;
+  },
+
+  closeContent() {
+    document.getElementById('std-c-grid').hidden = false;
+    const v = document.getElementById('std-c-viewer'); v.hidden=true; v.innerHTML='';
+  },
+
+  /* Content modal */
+  _editId: null,
+  openCModal(item=null) {
+    G._editId = item?.id||null;
+    document.getElementById('adm-cm-title').textContent = item?'Editar contenido':'Agregar contenido';
+    document.getElementById('cf-title').value = item?.title||'';
+    document.getElementById('cf-desc').value  = item?.description||'';
+    document.getElementById('cf-type').value  = item?.type||'text';
+    document.getElementById('cf-cont').value  = item?.content||'';
+    document.getElementById('cf-en').checked  = item?.enabled??true;
+    G.updCPlaceholder();
+    document.getElementById('adm-cm').removeAttribute('hidden');
+    document.getElementById('cf-title').focus();
+  },
+  closeCModal() { document.getElementById('adm-cm').setAttribute('hidden',''); G._editId=null; },
+  updCPlaceholder() {
+    const ph={video:'https://youtube.com/watch?v=...',link:'https://ejemplo.com',pdf:'https://ejemplo.com/doc.pdf',text:'Escribe el contenido aquí...'};
+    document.getElementById('cf-cont').placeholder = ph[document.getElementById('cf-type').value]||'';
+  },
+  saveContent() {
+    const title = document.getElementById('cf-title').value.trim();
+    const desc  = document.getElementById('cf-desc').value.trim();
+    const type  = document.getElementById('cf-type').value;
+    const cont  = document.getElementById('cf-cont').value.trim();
+    const en    = document.getElementById('cf-en').checked;
+    if (!title||!cont) { alert('El título y el contenido son obligatorios.'); return; }
+    if (G._editId) Data.updContent(G._editId,{title,description:desc,type,content:cont,enabled:en});
+    else Data.addContent({title,description:desc,type,content:cont,enabled:en});
+    G.closeCModal(); UI.renderAdmContent();
+  },
+
+  /* Settings */
+  saveSettings() {
+    Data.updSettings({
+      platformName: document.getElementById('s-name').value.trim(),
+      tagline:      document.getElementById('s-tag').value.trim(),
+      welcome:      document.getElementById('s-wel').value.trim(),
+      allowReg:     document.getElementById('s-reg').checked,
+    });
+    toast('✓ Ajustes guardados.');
+  },
+
+  async changePass() {
+    const cur = document.getElementById('s-cp').value;
+    const nxt = document.getElementById('s-np').value;
+    const cnf = document.getElementById('s-cnp').value;
+    if (nxt!==cnf)  { toast('Las contraseñas no coinciden.','err'); return; }
+    if (nxt.length<8){ toast('Mín. 8 caracteres.','err'); return; }
+    const creds = LS(K.adminCreds).get();
+    const h = await sha256(creds.salt+cur);
+    if (h!==creds.hash) { toast('Contraseña actual incorrecta.','err'); return; }
+    const salt = crypto.randomUUID();
+    LS(K.adminCreds).set({...creds, salt, hash: await sha256(salt+nxt)});
+    ['s-cp','s-np','s-cnp'].forEach(id=>{ document.getElementById(id).value=''; });
+    toast('✓ Contraseña actualizada.');
+  },
+
+  clearStudents() {
+    if (!confirm('¿Eliminar TODOS los estudiantes? Irreversible.')) return;
+    LS(K.students).set([]); UI.renderAdmStudents();
+    toast('Todos los estudiantes eliminados.','warn');
+  },
+
+  /* Form handlers */
+  async handleSetup(e) {
+    e.preventDefault();
+    const btn = document.getElementById('su-btn');
+    const al  = document.getElementById('setup-alert');
+    btn.disabled=true; btn.textContent='Configurando...';
+    al.classList.remove('show');
+    const u=document.getElementById('su-user').value.trim();
+    const p=document.getElementById('su-pass').value;
+    const c=document.getElementById('su-conf').value;
+    if (p!==c||p.length<8) {
+      al.textContent=p!==c?'Las contraseñas no coinciden.':'Mín. 8 caracteres.';
+      al.classList.add('show'); btn.disabled=false; btn.textContent='Crear credenciales'; return;
+    }
+    await Auth.setupAdmin(u,p);
+    const r = await Auth.loginAdmin(u,p);
+    btn.disabled=false; btn.textContent='Crear credenciales';
+    if (r.ok) { Router.go('adash'); UI.renderAdminDash(); }
+    else { al.textContent='Error. Recarga.'; al.classList.add('show'); }
+  },
+
+  async handleAdminLogin(e) {
+    e.preventDefault();
+    const btn=document.getElementById('al-btn');
+    const al =document.getElementById('al-alert');
+    const atm=document.getElementById('al-attempts');
+    btn.disabled=true; btn.textContent='Verificando...'; al.classList.remove('show'); atm.textContent='';
+    const r = await Auth.loginAdmin(document.getElementById('al-user').value.trim(), document.getElementById('al-pass').value);
+    btn.disabled=false; btn.textContent='Acceder';
+    if (!r.ok) { al.textContent=r.err; al.classList.add('show'); document.getElementById('al-pass').value=''; return; }
+    Router.go('adash'); UI.renderAdminDash();
+  },
+
+  async handleLogin(e) {
+    e.preventDefault();
+    const btn=document.getElementById('l-btn');
+    const al =document.getElementById('ml-alert');
+    btn.disabled=true; btn.textContent='Ingresando...'; al.classList.remove('show');
+    const r = await Auth.loginStudent(document.getElementById('l-user').value.trim(), document.getElementById('l-pass').value);
+    btn.disabled=false; btn.textContent='Ingresar';
+    if (!r.ok) { al.textContent=r.err; al.classList.add('show'); return; }
+    G.closeModal('ml'); Router.go('student'); UI.renderStudentDash();
+  },
+
+  async handleRegister(e) {
+    e.preventDefault();
+    const btn=document.getElementById('r-btn');
+    const al =document.getElementById('mr-alert');
+    btn.disabled=true; btn.textContent='Creando cuenta...'; al.classList.remove('show');
+    const pass=document.getElementById('r-pass').value;
+    const conf=document.getElementById('r-conf').value;
+    if (pass!==conf||pass.length<6) {
+      al.textContent=pass!==conf?'Las contraseñas no coinciden.':'Mín. 6 caracteres.';
+      al.classList.add('show'); btn.disabled=false; btn.textContent='Crear cuenta'; return;
+    }
+    const r = await Auth.register({
+      name:  document.getElementById('r-name').value.trim(),
+      email: document.getElementById('r-email').value.trim().toLowerCase(),
+      user:  document.getElementById('r-user').value.trim(),
+      pass,
+    });
+    btn.disabled=false; btn.textContent='Crear cuenta';
+    if (!r.ok) { al.textContent=r.err; al.classList.add('show'); return; }
+    const lr = await Auth.loginStudent(r.student.user, pass);
+    G.closeModal('mr');
+    if (lr.ok) { Router.go('student'); UI.renderStudentDash(); }
+    else G.openModal('ml');
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   ADMIN TABLE CALLBACKS (global)
+════════════════════════════════════════════════════════════════ */
+window._aToggleStd = btn => { Data.updStudent(btn.dataset.id,{enabled:btn.dataset.en==='true'}); UI.renderAdmStudents(); };
+window._aDelStd    = btn => { if(confirm(`¿Eliminar a "${btn.dataset.nm}"?`)){Data.delStudent(btn.dataset.id);UI.renderAdmStudents();} };
+window._aToglCont  = btn => { Data.updContent(btn.dataset.id,{enabled:btn.dataset.en==='true'}); UI.renderAdmContent(); };
+window._aEditCont  = id  => { const it=Data.getContent().find(c=>c.id===id); if(it)G.openCModal(it); };
+window._aDelCont   = btn => { if(confirm(`¿Eliminar "${btn.dataset.t}"?`)){Data.delContent(btn.dataset.id);UI.renderAdmContent();} };
+
+/* ════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════ */
+function toast(msg, type='ok') {
+  document.getElementById('_toast')?.remove();
+  const colors = {ok:'#1a7340',err:'#c02020',warn:'#8a5800'};
+  const t = document.createElement('div');
+  t.id='_toast';
+  t.setAttribute('role','status'); t.setAttribute('aria-live','polite');
+  t.style.cssText=`position:fixed;bottom:22px;right:22px;z-index:9999;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:500;background:${colors[type]};color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:popIn .25s ease;pointer-events:none`;
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t?.remove(),3000);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MODAL UX (overlay click + ESC)
+════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.modal-bg').forEach(bg=>bg.addEventListener('click',e=>{ if(e.target===bg) G.closeModal(bg.id); }));
+document.getElementById('adm-cm').addEventListener('click',e=>{ if(e.target===document.getElementById('adm-cm'))G.closeCModal(); });
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  document.querySelectorAll('.modal-bg:not([hidden])').forEach(m=>G.closeModal(m.id));
+  if (!document.getElementById('adm-cm').hasAttribute('hidden')) G.closeCModal();
+});
+
+/* ════════════════════════════════════════════════════════════════
+   THREE.JS — TILO ROBOT
+════════════════════════════════════════════════════════════════ */
+const geos=new Set(), mats_=new Set(), txs=new Set();
+const gr=g=>(geos.add(g),g), mr_=m=>(mats_.add(m),m);
+function mkM(g,m,parent,pos=[0,0,0],sc=[1,1,1]){
+  const n=new THREE.Mesh(gr(g),m); n.position.set(...pos); n.scale.set(...sc); parent.add(n); return n;
+}
+let renderer,scene,cam,group,head,eyes=[];
+let el=0,ll=0,raf3=0,dis3=false,pau3=false,vis3=true,sayHi=0;
+const ptr=new THREE.Vector2(),smt=new THREE.Vector2();
+
+function initThree(){
+  const hero=document.querySelector('.hero'), host=document.getElementById('visual'), mnt=host.querySelector('.canvas-mount');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  pau3=reduced.matches;
+  try{ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'}); }
+  catch(e){ document.getElementById('metrics').textContent='WebGL no disponible.'; return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<700?1.25:1.75));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=0.76;
+  renderer.setClearColor(0,0);
+  mnt.appendChild(renderer.domElement);
+  scene=new THREE.Scene(); cam=new THREE.PerspectiveCamera(35,1,.1,100);
+  cam.position.set(0,.15,7.8); cam.lookAt(0,0,0);
+  group=new THREE.Group(); scene.add(group);
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  const room=new RoomEnvironment();
+  const env=pmrem.fromScene(room,.025);
+  scene.environment=env.texture; scene.environmentIntensity=0.7; room.dispose();
+  scene.add(new THREE.HemisphereLight(0xffffff,0x434137,.75));
+  const key=new THREE.DirectionalLight(0xffebd5,2.3); key.position.set(-3,5,5); scene.add(key);
+  const fill=new THREE.DirectionalLight(0xd4ecff,1.3); fill.position.set(4,1,2); scene.add(fill);
+  const rim=new THREE.DirectionalLight(0xffffff,3); rim.position.set(0,3,-3); scene.add(rim);
+  // Tilo materials
+  const ceramic=mr_(new THREE.MeshPhysicalMaterial({color:0xe9e3c7,roughness:.27,metalness:.16,clearcoat:1,clearcoatRoughness:.25}));
+  const copper=mr_(new THREE.MeshStandardMaterial({color:0xb4532e,roughness:.3,metalness:.7}));
+  const dark=mr_(new THREE.MeshPhysicalMaterial({color:0x101b1a,roughness:.16,metalness:.35,clearcoat:1}));
+  const trim=mr_(new THREE.MeshStandardMaterial({color:0x777867,roughness:.25,metalness:1}));
+  const glow=mr_(new THREE.MeshBasicMaterial({color:0xe4ffb3}));
+  head=new THREE.Group(); head.position.y=.43; group.add(head);
+  mkM(new RoundedBoxGeometry(2.15,1.76,1.5,5,.47),ceramic,head);
+  mkM(new RoundedBoxGeometry(1.83,1.16,.28,5,.3),trim,head,[0,-.04,.69]);
+  mkM(new RoundedBoxGeometry(1.73,1.06,.35,5,.3),dark,head,[0,-.04,.77]);
+  eyes=[];
+  for(const x of[-.43,.43]){
+    const eye=mkM(new THREE.CapsuleGeometry(.09,.18,6,14),glow,head,[x,.03,.967]); eyes.push(eye);
+    const ear=mkM(new THREE.CylinderGeometry(.35,.35,.15,40),copper,head,[Math.sign(x)*1.15,0,0]); ear.rotation.z=Math.PI/2;
+    const cap=mkM(new THREE.CylinderGeometry(.255,.255,.17,40),ceramic,head,[Math.sign(x)*1.23,0,0]); cap.rotation.z=Math.PI/2;
+  }
+  const ant=mkM(new THREE.CapsuleGeometry(.018,.23,3,8),copper,head,[.15,.98,0]); ant.rotation.z=-.2;
+  mkM(new THREE.SphereGeometry(.07,20,12),glow,head,[.18,1.13,0]);
+  mkM(new THREE.CylinderGeometry(.33,.38,.38,36),trim,group,[0,-.57,0]);
+  mkM(new RoundedBoxGeometry(1.53,1.2,.97,5,.4),ceramic,group,[0,-1.2,0]);
+  mkM(new THREE.CircleGeometry(.16,32),copper,group,[0,-1.05,.49]);
+  mkM(new THREE.CircleGeometry(.075,24),dark,group,[0,-1.05,.494]);
+  for(const s of[-1,1]){
+    const arm=mkM(new THREE.CapsuleGeometry(.2,.52,6,24),ceramic,group,[s*.99,-1.13,0]); arm.rotation.z=s*.3;
+    mkM(new THREE.SphereGeometry(.19,24,16),copper,group,[s*1.1,-1.5,0]);
+  }
+  group.rotation.y=-.14; group.rotation.z=-.035; group.position.y=.25;
+  // Ground shadow
+  const sc=document.createElement('canvas'); sc.width=sc.height=128;
+  const ctx=sc.getContext('2d'); const grd=ctx.createRadialGradient(64,64,0,64,64,64);
+  grd.addColorStop(0,'rgba(54,49,26,.22)'); grd.addColorStop(1,'rgba(54,49,26,0)');
+  ctx.fillStyle=grd; ctx.fillRect(0,0,128,128);
+  const st=new THREE.CanvasTexture(sc); txs.add(st);
+  const shd=mkM(new THREE.PlaneGeometry(4,1),mr_(new THREE.MeshBasicMaterial({map:st,transparent:true,depthWrite:false})),scene,[0,-2.03,-.5]);
+  shd.rotation.x=-.2;
+  // Events
+  const obs=new ResizeObserver(()=>{ const r=host.getBoundingClientRect(); renderer.setSize(r.width,r.height); cam.aspect=r.width/r.height; cam.updateProjectionMatrix(); threeWake(); });
+  obs.observe(host);
+  const onMv=e=>{ const r=host.getBoundingClientRect(); ptr.set(THREE.MathUtils.clamp((e.clientX-r.left)/r.width*2-1,-1,1),THREE.MathUtils.clamp(1-(e.clientY-r.top)/r.height*2,-1,1)); threeWake(); };
+  host.addEventListener('pointermove',onMv); host.addEventListener('pointerdown',onMv);
+  host.addEventListener('pointerleave',()=>{ ptr.set(0,0); threeWake(); });
+  host.addEventListener('keydown',e=>{
+    if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(e.key))return;
+    e.preventDefault();
+    if(e.key==='Home')ptr.set(0,0);
+    else{ ptr.x=THREE.MathUtils.clamp(ptr.x+(e.key==='ArrowLeft'?-.2:e.key==='ArrowRight'?.2:0),-1,1); ptr.y=THREE.MathUtils.clamp(ptr.y+(e.key==='ArrowUp'?.2:e.key==='ArrowDown'?-.2:0),-1,1); }
+    threeWake();
+  });
+  reduced.addEventListener('change',()=>{ pau3=reduced.matches; threeWake(); });
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden){cancelAnimationFrame(raf3);raf3=0;}else threeWake(); });
+  new IntersectionObserver(([e])=>{ vis3=e.isIntersecting; if(vis3)threeWake();else{cancelAnimationFrame(raf3);raf3=0;} },{threshold:.01}).observe(hero);
+  // Hero CTA wave
+  document.getElementById('hero-cta')?.addEventListener('click',()=>{
+    sayHi=2; document.getElementById('hero-response').textContent='¡Hola! Bienvenido a Next Code 🤖';
+    threeWake();
+  });
+  renderer.domElement.addEventListener('webglcontextlost',e=>{
+    e.preventDefault(); cancelAnimationFrame(raf3); raf3=0;
+    hero.classList.remove('webgl-ready'); dis3=true;
+  });
+  window.addEventListener('pagehide',()=>{
+    dis3=true; cancelAnimationFrame(raf3);
+    geos.forEach(g=>g.dispose()); mats_.forEach(m=>m.dispose()); txs.forEach(t=>t.dispose());
+    env?.dispose(); pmrem?.dispose(); renderer?.dispose();
+  },{once:true});
+  threeWake();
+}
+
+function threeLoop(now=performance.now()){
+  raf3=0;
+  if(dis3||!vis3||document.hidden)return;
+  const rawDt=(now-(ll||now))/1000, dt=Math.min(rawDt,.05);
+  ll=now;
+  if(!pau3){ el+=dt; smt.lerp(ptr,1-Math.exp(-dt*6)); }
+  if(!pau3){
+    head.rotation.y=smt.x*.4; head.rotation.x=-smt.y*.23; head.rotation.z=Math.sin(el*.7)*.025;
+    group.position.y=.25+Math.sin(el*1.35)*.055;
+    const blink=Math.pow(Math.max(0,Math.cos(el*1.25)),50);
+    eyes.forEach((eye,i)=>{ eye.scale.y=1-blink*.91; eye.position.x=(i?.43:-.43)+smt.x*.035; });
+    if(sayHi>0){ sayHi=Math.max(0,sayHi-dt); head.rotation.z+=Math.sin(sayHi*9)*.09; }
+  }
+  renderer.render(scene,cam);
+  document.querySelector('.hero')?.classList.add('webgl-ready');
+  if(!pau3) raf3=requestAnimationFrame(threeLoop);
+}
+
+function threeWake(){ if(!raf3&&!dis3&&renderer){ ll=performance.now(); raf3=requestAnimationFrame(threeLoop); } }
+function threePause(){ cancelAnimationFrame(raf3); raf3=0; }
+
+/* ════════════════════════════════════════════════════════════════
+   EXPOSE & INIT
+════════════════════════════════════════════════════════════════ */
+Object.assign(window, { G, Auth, Router, UI, Data, threeWake, threePause, toast });
+
+Router.init();
+initThree();
+</script>
+</body>
+</html>
